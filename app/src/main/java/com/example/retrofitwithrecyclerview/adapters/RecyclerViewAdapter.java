@@ -44,7 +44,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Log.d("RecyclerViewAdapter ", "onBindViewHolder: start");
-        holder.tvID.setText(list.get(position).getId());
+        holder.tvID.setText(String.valueOf(list.get(position).getId()));
         holder.tvTitle.setText(list.get(position).getTitle());
         holder.tvBody.setText(list.get(position).getBody());
         Log.d("RecyclerViewAdapter ", "onBindViewHolder: start");

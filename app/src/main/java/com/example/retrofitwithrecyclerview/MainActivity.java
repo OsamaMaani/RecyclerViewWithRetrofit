@@ -9,10 +9,17 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.retrofitwithrecyclerview.adapters.RecyclerViewAdapter;
+import com.example.retrofitwithrecyclerview.models.ApiInterface;
 import com.example.retrofitwithrecyclerview.models.Post;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView  rv;
@@ -31,22 +38,33 @@ public class MainActivity extends AppCompatActivity {
                 RecyclerView.VERTICAL, false);
         rv.setLayoutManager(layoutManager);
 
-        Log.d("Error", "onCreate: Before ArrayList");
+         Retrofit retrofit = new Retrofit.Builder()
+                 .baseUrl("https://jsonplaceholder.typicode.com/")
+                 .addConverterFactory(GsonConverterFactory.create())
+                 .build();
+         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+         Call<List<Post>> call = apiInterface.getPosts();
+         call.enqueue(new Callback<List<Post>>() {
+             @Override
+             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
 
-        data = new ArrayList<>();
-        data.add(new Post(1,"oo ", "kkk"));
-        data.add(new Post(1,"oo ", "kkk"));
-        data.add(new Post(1,"oo ", "kkk"));
-        data.add(new Post(1,"oo ", "kkk"));
-        data.add(new Post(1,"oo ", "kkk"));
-        data.add(new Post(1,"oo ", "kkk"));
-        data.add(new Post(1,"oo ", "kkk"));
+                 if(response.isSuccessful()){
+                     data = response.body();
+                     recyclerViewAdapter = new RecyclerViewAdapter(data);
+                     Log.d("Error", "onCreate: ArrayAdapter init");
+                     rv.setAdapter(recyclerViewAdapter);
+                     Log.d("Error", "onCreate: ArrayAdapter setting adapter");
 
-        Log.d("Error", "onCreate: Before ArrayAdapter");
-        recyclerViewAdapter = new RecyclerViewAdapter(data);
-        Log.d("Error", "onCreate: ArrayAdapter init");
-        rv.setAdapter(recyclerViewAdapter);
-        Log.d("Error", "onCreate: ArrayAdapter setting adapter");
+                 }
+
+             }
+
+             @Override
+             public void onFailure(Call<List<Post>> call, Throwable t) {
+                 Log.e("Error", "onFailure: No Response " +t.getMessage() );
+             }
+         });
+
 
     }
 }
